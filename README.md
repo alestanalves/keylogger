@@ -62,4 +62,3 @@ A criação do **keylogger** é um processo muito simples, conforme descrito aba
     hook_manager.HookKeyboard()
     hook_manager.start()
     ```
-
